@@ -115,7 +115,7 @@ def weighted_avg_and_std(values, weights):
     return (average, np.sqrt(variance))
 
 
-def calc_expresults_stats(ylabels, dfdes, dfres, outpath):
+def calc_expresults_stats(ylabels, dfdes, dfres, outpath, imagetype):
     """
 	Computation of statistical evaluation of experimetal results for each predicted y:
 	1) Parameter importance, which is defined by maximum y range over parameter levels (y in averaged for each level)
@@ -181,7 +181,7 @@ def calc_expresults_stats(ylabels, dfdes, dfres, outpath):
         )
         plt.title("Range " + str(ylabel))
         plt.tight_layout()
-        plt.savefig(os.path.join(outpath, "Ybarplot_" + str(ylabel) + ".png"), dpi=300)
+        plt.savefig(os.path.join(outpath, "Ybarplot_" + str(ylabel) + imagetype), dpi=300)
         plt.close()
         # Save factor importance to csv:
         res = np.vstack((width, ymin_par, ymax_par, ymean_par, ystd_par))
@@ -530,7 +530,7 @@ def plot_factordis(df, params, target_name, fname_out):
         ax = sns.violinplot(y=df[target_name], x=df[columns[i]])
         plt.savefig(fname_out, dpi=300)
 
-def plot_table(df_table, outpath, fname_out):
+def plot_table(df_table, outpath, fname_out, imagetype):
     """
     Plot Dataframe as formatted table
 
@@ -569,7 +569,7 @@ def plot_table(df_table, outpath, fname_out):
     plt.close()
     
 
-def main(inpath, fname_results, fname_design, outpath = None):
+def main(inpath, fname_results, fname_design, outpath = None, imagetype='.png'):
 
     if outpath is None:
         outpath = inpath = Path(inpath)
@@ -601,7 +601,7 @@ def main(inpath, fname_results, fname_design, outpath = None):
     nexp = dfdes.shape[0]
 
     # Calculating main stats (RMSE, parameter importance, best parameters)
-    calc_expresults_stats(ylabels, dfdes, dfres, outpath)
+    calc_expresults_stats(ylabels, dfdes, dfres, outpath, imagetype)
 
     # Visualise correlation results for each Y predictable
     for ylabel in ylabels:
@@ -610,19 +610,19 @@ def main(inpath, fname_results, fname_design, outpath = None):
         df = pd.read_csv(dfname)
         # Plot Pairwise X correlation for Y:
         fname_out1 = (os.path.join(
-            outpath, "Y-pairwise-correlation_" + str(ylabel) + ".png")
+            outpath, "Y-pairwise-correlation_" + str(ylabel) + imagetype)
         )
         plot_3dmap(df, params, "Y Exp Mean", fname_out1)
         # Plot Pairwise X correlation for RMSE
         fname_out2 = (os.path.join(
-            outpath, "RMSE-pairwise-correlation_" + str(ylabel) + ".png")
+            outpath, "RMSE-pairwise-correlation_" + str(ylabel) + imagetype)
         )
         plot_3dmap(df, params, "RMSE", fname_out2)
         # Plot Main factor correlation plot with Y:
-        fname_out3 = os.path.join(outpath, "Expresult_correlation_X-Y_" + str(ylabel) + ".png")
+        fname_out3 = os.path.join(outpath, "Expresult_correlation_X-Y_" + str(ylabel) + imagetype)
         
         plot_regression(df, params, 'Y Exp Mean', fname_out3)
-        fname_out4 = os.path.join(outpath, "Expresult_distribution_X-RMSE_" + str(ylabel) + ".png")
+        fname_out4 = os.path.join(outpath, "Expresult_distribution_X-RMSE_" + str(ylabel) + imagetype)
         
         plot_factordis(df, params, 'RMSE', fname_out4)
 
